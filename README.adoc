@@ -1,0 +1,4 @@
+:project_name: Ansible Role "Manage Traefik"
+= {project_name}
+
+Special purpose Ansible role to manage traefik proxy in "factory" environments.
