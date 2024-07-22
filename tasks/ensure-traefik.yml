@@ -22,13 +22,13 @@
 - name: Ensure docker-compose.yml
   ansible.builtin.template:
     dest: "{{ TRAEFIK_INSTALLATION_PATH }}/docker-compose.yml"
-    src: "{{ playbook_dir }}/../templates/traefik/docker-compose.yml.j2"
+    src: "templates/docker-compose.yml.j2"
     mode: '644'
   notify: Restart traefik
 
 - name: Ensure traefik.yml
   ansible.builtin.template:
     dest: "{{ TRAEFIK_INSTALLATION_PATH }}/etc/traefik.yml"
-    src: "{{ playbook_dir }}/../templates/traefik/traefik.yml.j2"
+    src: "templates/traefik.yml.j2"
     mode: '644'
   notify: Restart traefik

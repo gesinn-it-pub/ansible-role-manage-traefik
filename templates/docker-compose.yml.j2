@@ -1,0 +1,21 @@
+services:
+
+  traefik:
+    image: traefik:{{ TRAEFIK_VERSION }}
+    restart: always
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./etc:/etc/traefik
+{% if TRAEFIK_EXTRA_CERTS_FOLDER is defined %}
+      - "{{ TRAEFIK_EXTRA_CERTS_FOLDER }}:/etc/traefik/extra-certs"
+{% endif %}
+    labels:
+      - "traefik.http.middlewares.no-contenttype-autodetect.contenttype.autodetect=false"
+
+networks:
+  default:
+    external:
+      name: traefik

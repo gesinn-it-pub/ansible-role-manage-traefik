@@ -1,0 +1,36 @@
+entryPoints:
+  web:
+    address: ':80'
+    http:
+      redirections:
+        entrypoint:
+          to: websecure
+          scheme: https
+  websecure:
+    address: ':443'
+
+providers:
+  docker:
+    # Without explicitly setting the network here, traefik randomly
+    # chooses one of the two IP addresses of the wiki services which
+    # leads to random "gateway timout"s
+    network: traefik
+  file:
+    directory: '/etc/traefik/dynamic'
+    watch: true
+
+{% if TRAEFIK_DASHBOARD_PASSWORD is defined %}
+api:
+  dashboard: true
+  insecure: true
+{% endif %}
+
+{% if TRAEFIK_ACME_REGISTRATION_EMAIL is defined %}
+certificatesResolvers:
+  myresolver:
+    acme:
+      email: {{ TRAEFIK_ACME_REGISTRATION_EMAIL }}
+      storage: /etc/traefik/acme.json
+      httpChallenge:
+        entryPoint: web
+{% endif %}
