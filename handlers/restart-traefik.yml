@@ -1,0 +1,5 @@
+- name: Restart traefik
+  shell: |
+    {{ docker_compose }} up -d --force-recreate
+  args:
+    chdir: "{{ TRAEFIK_INSTALLATION_PATH }}"

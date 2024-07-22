@@ -1,0 +1,30 @@
+- name: Show traefik settings
+  ansible.builtin.debug:
+    msg:
+      TRAEFIK_VERSION: "{{ TRAEFIK_VERSION | default('---') }}"
+      TRAEFIK_INSTALLATION_PATH: "{{ TRAEFIK_INSTALLATION_PATH | default('---') }}"
+      TRAEFIK_ACME_REGISTRATION_EMAIL: "{{ TRAEFIK_ACME_REGISTRATION_EMAIL | default('---') }}"
+
+- name: Ensure certs directory
+  ansible.builtin.file:
+    path: "{{ TRAEFIK_INSTALLATION_PATH }}/etc/certs"
+    state: directory
+  notify: Restart traefik
+
+- name: Ensure dynamic directory
+  ansible.builtin.file:
+    path: "{{ TRAEFIK_INSTALLATION_PATH }}/etc/dynamic"
+    state: directory
+  notify: Restart traefik
+
+- name: Ensure docker-compose.yml
+  ansible.builtin.template:
+    dest: "{{ TRAEFIK_INSTALLATION_PATH }}/docker-compose.yml"
+    src: "{{ playbook_dir }}/templates/traefik/docker-compose.yml.j2"
+  notify: Restart traefik
+
+- name: Ensure traefik.yml
+  ansible.builtin.template:
+    dest: "{{ TRAEFIK_INSTALLATION_PATH }}/etc/traefik.yml"
+    src: "{{ playbook_dir }}/templates/traefik/traefik.yml.j2"
+  notify: Restart traefik
