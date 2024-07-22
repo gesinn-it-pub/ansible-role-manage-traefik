@@ -1,5 +1,6 @@
 - name: Restart traefik
-  shell: |
+  ansible.builtin.shell: |
     {{ docker_compose }} up -d --force-recreate
   args:
     chdir: "{{ TRAEFIK_INSTALLATION_PATH }}"
+  changed_when: false

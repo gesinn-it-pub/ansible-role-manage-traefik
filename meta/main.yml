@@ -1,0 +1,12 @@
+---
+dependencies: []
+
+galaxy_info:
+  role_name: "manage_traefik"
+  namespace: gesinn
+  author: "gesinn.it"
+  description: Special purpose Ansible role to manage traefik proxy in "factory" environments.
+  issue_tracker_url: https://github.com/gesinn-it-pub/ansible-role-manage-traefik/issues
+  company: "gesinn.it GmbH & Co. KG"
+  license: "MIT"
+  min_ansible_version: "2.10"
