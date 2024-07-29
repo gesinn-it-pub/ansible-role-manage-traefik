@@ -1,34 +1,34 @@
-- name: Show traefik settings
+- name: Ensure Traefik | Show traefik settings
   ansible.builtin.debug:
     msg:
       TRAEFIK_VERSION: "{{ TRAEFIK_VERSION | default('---') }}"
       TRAEFIK_INSTALLATION_PATH: "{{ TRAEFIK_INSTALLATION_PATH | default('---') }}"
       TRAEFIK_ACME_REGISTRATION_EMAIL: "{{ TRAEFIK_ACME_REGISTRATION_EMAIL | default('---') }}"
 
-- name: Ensure certs directory
+- name: Ensure Traefik | Ensure certs directory
   ansible.builtin.file:
     path: "{{ TRAEFIK_INSTALLATION_PATH }}/etc/certs"
     state: directory
     mode: '755'
-  notify: Restart traefik
+  notify: Ensure Traefik | Restart traefik
 
-- name: Ensure dynamic directory
+- name: Ensure Traefik | Ensure dynamic directory
   ansible.builtin.file:
     path: "{{ TRAEFIK_INSTALLATION_PATH }}/etc/dynamic"
     state: directory
     mode: '755'
-  notify: Restart traefik
+  notify: Ensure Traefik | Restart traefik
 
-- name: Ensure docker-compose.yml
+- name: Ensure Traefik | Ensure docker-compose.yml
   ansible.builtin.template:
     dest: "{{ TRAEFIK_INSTALLATION_PATH }}/docker-compose.yml"
     src: "../templates/docker-compose.yml.j2"
     mode: '644'
-  notify: Restart traefik
+  notify: Ensure Traefik | Restart traefik
 
-- name: Ensure traefik.yml
+- name: Ensure Traefik | Ensure traefik.yml
   ansible.builtin.template:
     dest: "{{ TRAEFIK_INSTALLATION_PATH }}/etc/traefik.yml"
     src: "../templates/traefik.yml.j2"
     mode: '644'
-  notify: Restart traefik
+  notify: Ensure Traefik | Restart traefik

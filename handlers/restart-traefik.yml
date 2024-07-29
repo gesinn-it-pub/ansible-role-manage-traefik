@@ -1,4 +1,4 @@
-- name: Restart traefik
+- name: Restart Traefik | Restart traefik
   ansible.builtin.shell: |
     {{ docker_compose }} up -d --force-recreate
   args:
