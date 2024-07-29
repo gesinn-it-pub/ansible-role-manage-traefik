@@ -10,28 +10,28 @@
     path: "{{ TRAEFIK_INSTALLATION_PATH }}/etc/certs"
     state: directory
     mode: '755'
-  notify: Ensure Traefik | Restart traefik
+  notify: Restart traefik
 
 - name: Ensure Traefik | Ensure dynamic directory
   ansible.builtin.file:
     path: "{{ TRAEFIK_INSTALLATION_PATH }}/etc/dynamic"
     state: directory
     mode: '755'
-  notify: Ensure Traefik | Restart traefik
+  notify: Restart traefik
 
 - name: Ensure Traefik | Ensure docker-compose.yml
   ansible.builtin.template:
     dest: "{{ TRAEFIK_INSTALLATION_PATH }}/docker-compose.yml"
     src: "../templates/docker-compose.yml.j2"
     mode: '644'
-  notify: Ensure Traefik | Restart traefik
+  notify: Restart traefik
 
 - name: Ensure Traefik | Ensure traefik.yml
   ansible.builtin.template:
     dest: "{{ TRAEFIK_INSTALLATION_PATH }}/etc/traefik.yml"
     src: "../templates/traefik.yml.j2"
     mode: '644'
-  notify: Ensure Traefik | Restart traefik
+  notify: Restart traefik
 
 - name: Ensure Base | Create traefik network
   # Do this here so that ensure-traefik does not need to depend on the docker module;
