@@ -14,6 +14,12 @@ services:
 {% endif %}
     labels:
       - "traefik.http.middlewares.no-contenttype-autodetect.contenttype.autodetect=false"
+  ofelia:
+    image: mcuadros/ofelia:{{ OFELIA_VERSION }}
+    restart: always
+    command: daemon --docker
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
 
 networks:
   default:
