@@ -37,5 +37,6 @@
   # Do this here so that ensure-traefik does not need to depend on the docker module;
   # this allows calling ensure-traefik on a developer machine where the network has
   # already been created manually ('docker network create traefik')
+  become: yes
   community.general.docker_network:
     name: traefik
