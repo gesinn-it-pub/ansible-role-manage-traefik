@@ -1,6 +1,6 @@
-- name: Restart traefik
+- name: Restart ofelia
   ansible.builtin.shell: |
-    {{ docker_compose }} up -d --force-recreate traefik
+    {{ docker_compose }} up -d --force-recreate ofelia
   args:
     chdir: "{{ TRAEFIK_INSTALLATION_PATH }}"
   changed_when: false
