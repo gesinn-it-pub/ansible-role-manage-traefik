@@ -22,9 +22,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./ofelia/config.ini:/config.ini
       - ./ofelia/reports:/reports
-    labels:
-      ofelia.job-local.my-test-job.schedule: "0 0 1 * * *"
-      ofelia.job-local.my-test-job.command: "date"
 
 networks:
   default:
