@@ -24,7 +24,9 @@
     dest: "{{ TRAEFIK_INSTALLATION_PATH }}/docker-compose.yml"
     src: "../templates/docker-compose.yml.j2"
     mode: '644'
-  notify: Restart traefik
+  notify: 
+    - Restart traefik
+    - Restart ofelia
 
 - name: Ensure Traefik | Ensure traefik.yml
   ansible.builtin.template:
@@ -40,14 +42,18 @@
     path: "{{ TRAEFIK_INSTALLATION_PATH }}/ofelia"
     state: directory
     mode: '755'
-  notify: Restart traefik
+  notify: 
+    - Restart traefik
+    - Restart ofelia
 
 - name: Ensure Traefik | Ensure ofelia config.ini
   ansible.builtin.template:
     dest: "{{ TRAEFIK_INSTALLATION_PATH }}/ofelia/config.ini"
     src: "../templates/ofelia/config.ini.j2"
     mode: '644'
-  notify: Restart traefik
+  notify: 
+    - Restart traefik
+    - Restart ofelia
 
 # ofelia
 
