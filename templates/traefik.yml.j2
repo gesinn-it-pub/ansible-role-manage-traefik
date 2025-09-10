@@ -1,3 +1,8 @@
+# Disable update checks and usage report
+global:
+  checkNewVersion: false
+  sendAnonymousUsage: false
+
 entryPoints:
   web:
     address: ':80'
@@ -34,3 +39,8 @@ certificatesResolvers:
       httpChallenge:
         entryPoint: web
 {% endif %}
+
+# log:
+#   level: DEBUG
+
+# accessLog: {}
