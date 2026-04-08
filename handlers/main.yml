@@ -1,0 +1,5 @@
+---
+- name: Import restart-traefik handler
+  ansible.builtin.import_tasks: restart-traefik.yml
+- name: Import restart-ofelia handler
+  ansible.builtin.import_tasks: restart-ofelia.yml

@@ -1,0 +1,22 @@
+---
+driver:
+  name: default
+
+platforms:
+  - name: instance
+
+provisioner:
+  name: ansible
+  env:
+    ANSIBLE_ROLES_PATH: /tmp/roles
+  inventory:
+    hosts:
+      all:
+        hosts:
+          instance:
+            ansible_connection: local
+  options:
+    skip-tags: molecule_skip
+
+verifier:
+  name: ansible

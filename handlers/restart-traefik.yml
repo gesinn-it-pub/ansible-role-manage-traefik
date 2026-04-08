@@ -4,3 +4,4 @@
   args:
     chdir: "{{ TRAEFIK_INSTALLATION_PATH }}"
   changed_when: false
+  tags: [molecule_skip]

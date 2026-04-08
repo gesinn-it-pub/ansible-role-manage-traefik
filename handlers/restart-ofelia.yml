@@ -5,3 +5,4 @@
     chdir: "{{ TRAEFIK_INSTALLATION_PATH }}"
   when: OFELIA_VERSION is defined
   changed_when: false
+  tags: [molecule_skip]

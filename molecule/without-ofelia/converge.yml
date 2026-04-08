@@ -1,0 +1,12 @@
+---
+- name: Converge
+  hosts: all
+  vars:
+    TRAEFIK_VERSION: "{{ lookup('env', 'TRAEFIK_VERSION') | default('3.3', true) }}"
+    TRAEFIK_INSTALLATION_PATH: /tmp/molecule-traefik-test
+    docker_compose: /bin/true
+  tasks:
+    - name: Apply role
+      ansible.builtin.include_role:
+        name: ansible-role-manage-traefik
+        tasks_from: ensure-traefik.yml

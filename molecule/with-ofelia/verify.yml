@@ -1,0 +1,44 @@
+---
+- name: Verify with-ofelia
+  hosts: all
+  vars:
+    TRAEFIK_VERSION_EXPECTED: "{{ lookup('env', 'TRAEFIK_VERSION') | default('3.3', true) }}"
+    install_path: /tmp/molecule-traefik-test
+  tasks:
+    - name: Read docker-compose.yml
+      ansible.builtin.slurp:
+        src: "{{ install_path }}/docker-compose.yml"
+      register: compose_raw
+
+    - name: Set compose content fact
+      ansible.builtin.set_fact:
+        compose: "{{ compose_raw.content | b64decode }}"
+
+    - name: Assert correct Traefik version
+      ansible.builtin.assert:
+        that: "'traefik:{{ TRAEFIK_VERSION_EXPECTED }}' in compose"
+        fail_msg: "Expected 'traefik:{{ TRAEFIK_VERSION_EXPECTED }}' in docker-compose.yml"
+
+    - name: Assert Ofelia service is present
+      ansible.builtin.assert:
+        that: "'mcuadros/ofelia:0.3.7' in compose"
+        fail_msg: "Ofelia service must be present in the with-ofelia scenario"
+
+    - name: Assert traefik.yml exists
+      ansible.builtin.stat:
+        path: "{{ install_path }}/etc/traefik.yml"
+      register: traefik_yml
+
+    - name: Assert traefik.yml is present
+      ansible.builtin.assert:
+        that: traefik_yml.stat.exists
+
+    - name: Assert ofelia config.ini exists
+      ansible.builtin.stat:
+        path: "{{ install_path }}/ofelia/config.ini"
+      register: ofelia_config
+
+    - name: Assert ofelia config.ini is present
+      ansible.builtin.assert:
+        that: ofelia_config.stat.exists
+        fail_msg: "ofelia/config.ini must be deployed in the with-ofelia scenario"
