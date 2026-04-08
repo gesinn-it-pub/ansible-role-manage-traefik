@@ -19,6 +19,7 @@ services:
       HTTP_PROXY: ""
       https_proxy: ""
       HTTPS_PROXY: ""
+{% if OFELIA_VERSION is defined %}
   ofelia:
     image: mcuadros/ofelia:{{ OFELIA_VERSION }}
     restart: always
@@ -27,6 +28,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./ofelia/config.ini:/config.ini
       - ./ofelia/reports:/reports
+{% endif %}
 
 networks:
   default:

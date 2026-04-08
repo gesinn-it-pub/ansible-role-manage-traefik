@@ -3,4 +3,5 @@
     {{ docker_compose }} up -d --force-recreate ofelia
   args:
     chdir: "{{ TRAEFIK_INSTALLATION_PATH }}"
+  when: OFELIA_VERSION is defined
   changed_when: false
