@@ -1,0 +1,5 @@
+- name: Set Log Level | Render traefik.yml
+  ansible.builtin.template:
+    dest: "{{ TRAEFIK_INSTALLATION_PATH }}/etc/traefik.yml"
+    src: "../templates/traefik.yml.j2"
+    mode: '644'

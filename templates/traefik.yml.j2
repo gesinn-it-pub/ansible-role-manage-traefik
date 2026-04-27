@@ -40,7 +40,9 @@ certificatesResolvers:
         entryPoint: web
 {% endif %}
 
-# log:
-#   level: DEBUG
+{% if TRAEFIK_LOG_LEVEL is defined %}
+log:
+  level: {{ TRAEFIK_LOG_LEVEL }}
 
-# accessLog: {}
+accessLog: {}
+{% endif %}
