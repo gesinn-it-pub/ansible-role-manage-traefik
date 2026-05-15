@@ -2,7 +2,8 @@ services:
 
   traefik:
     image: traefik:{{ TRAEFIK_VERSION }}
-    restart: always
+    container_name: traefik
+    restart: unless-stopped
     ports:
       - '80:80'
       - '443:443'
@@ -22,7 +23,8 @@ services:
 {% if OFELIA_VERSION is defined %}
   ofelia:
     image: mcuadros/ofelia:{{ OFELIA_VERSION }}
-    restart: always
+    container_name: ofelia
+    restart: unless-stopped
     command: daemon --docker
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro

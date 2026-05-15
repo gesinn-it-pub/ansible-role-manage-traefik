@@ -3,3 +3,4 @@
     dest: "{{ TRAEFIK_INSTALLATION_PATH }}/etc/traefik.yml"
     src: "../templates/traefik.yml.j2"
     mode: '644'
+  notify: Restart traefik
