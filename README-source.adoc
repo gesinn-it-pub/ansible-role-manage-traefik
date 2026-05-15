@@ -1,4 +1,4 @@
-:project_name: Ansible Role "Manage Traefik"
+include::docs/attributes.adoc[]
 = {project_name}
 
 Special purpose Ansible role to manage traefik proxy in "factory" environments.

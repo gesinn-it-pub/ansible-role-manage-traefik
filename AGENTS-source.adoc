@@ -1,0 +1,2 @@
+include::docs/attributes.adoc[]
+include::docs/gesinn-it-docs-master-pub/documents/{project_type}/AGENTS.adoc[]
