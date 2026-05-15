@@ -330,3 +330,19 @@ Guidelines:
 
 - Use `chore` only for repository maintenance tasks that do not affect
   runtime behavior, dependencies, CI configuration, or tests
+
+# Project-Specific Conventions
+
+**Variable naming — UPPERCASE exception**
+
+This role deliberately uses `UPPERCASE` variable names (e.g.
+`TRAEFIK_VERSION`, `OFELIA_VERSION`, `TRAEFIK_INSTALLATION_PATH`)
+instead of the standard lowercase `manage_traefik_` prefix.
+
+Rationale: UPPERCASE names are a deliberate signal to consumers that
+these are **required input parameters** passed in from the outside
+(analogous to environment variables), not internal role variables. This
+convention predates the prefix rule and is kept for backward
+compatibility with all existing consumer projects (e.g. wiki-factory). A
+rename would be a breaking change and is therefore deferred until a
+major version bump.
