@@ -1,7 +1,8 @@
 name: Seed collections cache
 
 # Workaround while Galaxy is down: fills the cache that ci.yml restores (same key) from the collections' GitHub
-# repositories. Run it manually on the default branch; the key rotates weekly. Remove it once Galaxy is reliable again.
+# repositories. Run it manually on the default branch, and again after requirements.yml changed. Remove it once
+# Galaxy is reliable again.
 on:
   workflow_dispatch:
 
@@ -18,16 +19,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v7
 
-      - name: Get the ISO week
-        id: week
-        run: echo "week=$(date +%G-%V)" >> "$GITHUB_OUTPUT"
-
       - name: Cache the Galaxy collections
         id: cache
         uses: actions/cache@v6
         with:
           path: ~/.cache/ansible-role-collections
-          key: collections-${{ hashFiles('requirements.yml') }}-${{ steps.week.outputs.week }}
+          key: collections-${{ hashFiles('requirements.yml') }}
 
       - name: Install the collections from GitHub
         if: steps.cache.outputs.cache-hit != 'true'

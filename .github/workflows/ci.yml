@@ -9,7 +9,7 @@ on:
     paths-ignore:
       - '**/*.adoc'
   schedule:
-    - cron: '17 4 * * 1'
+    - cron: '17 4 * * 1,4'
   workflow_dispatch:
 
 permissions:
@@ -29,16 +29,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v7
 
-      - name: Get the ISO week
-        id: week
-        run: echo "week=$(date +%G-%V)" >> "$GITHUB_OUTPUT"
-
       - name: Cache the Galaxy collections
-        # Rotated weekly so that the scheduled run still picks up new collection releases
+        # Valid until requirements.yml changes. Accessed by the scheduled runs, so GitHub does not evict it
+        # (unused caches are deleted after 7 days)
         uses: actions/cache@v6
         with:
           path: ~/.cache/ansible-role-collections
-          key: collections-${{ hashFiles('requirements.yml') }}-${{ steps.week.outputs.week }}
+          key: collections-${{ hashFiles('requirements.yml') }}
 
       - name: Run lint
         run: make lint
@@ -63,16 +60,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v7
 
-      - name: Get the ISO week
-        id: week
-        run: echo "week=$(date +%G-%V)" >> "$GITHUB_OUTPUT"
-
       - name: Cache the Galaxy collections
-        # Rotated weekly so that the scheduled run still picks up new collection releases
+        # Valid until requirements.yml changes. Accessed by the scheduled runs, so GitHub does not evict it
+        # (unused caches are deleted after 7 days)
         uses: actions/cache@v6
         with:
           path: ~/.cache/ansible-role-collections
-          key: collections-${{ hashFiles('requirements.yml') }}-${{ steps.week.outputs.week }}
+          key: collections-${{ hashFiles('requirements.yml') }}
 
       - name: Run molecule
         run: make molecule ANSIBLE_CORE=${{ matrix.ansible_core }}
