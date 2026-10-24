@@ -16,7 +16,7 @@
 
     - name: Assert correct Traefik version
       ansible.builtin.assert:
-        that: "'traefik:{{ TRAEFIK_VERSION_EXPECTED }}' in compose"
+        that: "('traefik:' ~ TRAEFIK_VERSION_EXPECTED) in compose"
         fail_msg: "Expected 'traefik:{{ TRAEFIK_VERSION_EXPECTED }}' in docker-compose.yml"
 
     - name: Assert Ofelia service is present
