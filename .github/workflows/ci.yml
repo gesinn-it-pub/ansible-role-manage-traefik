@@ -29,6 +29,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v7
 
+      - name: Get the ISO week
+        id: week
+        run: echo "week=$(date +%G-%V)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache the Galaxy collections
+        # Rotated weekly so that the scheduled run still picks up new collection releases
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/ansible-role-collections
+          key: collections-${{ hashFiles('requirements.yml') }}-${{ steps.week.outputs.week }}
+
       - name: Run lint
         run: make lint
 
@@ -51,6 +62,17 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
+
+      - name: Get the ISO week
+        id: week
+        run: echo "week=$(date +%G-%V)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache the Galaxy collections
+        # Rotated weekly so that the scheduled run still picks up new collection releases
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/ansible-role-collections
+          key: collections-${{ hashFiles('requirements.yml') }}-${{ steps.week.outputs.week }}
 
       - name: Run molecule
         run: make molecule ANSIBLE_CORE=${{ matrix.ansible_core }}
