@@ -4,8 +4,3 @@ profile: production
 # Exclude files not meant to be linted directly
 exclude_paths:
   - .github/
-
-# Skip rules that don't apply to this role
-skip_list:
-  - yaml[truthy]          # boolean style is a matter of preference
-  - var-naming[pattern]   # role intentionally uses UPPER_CASE variable names (breaking to rename)

@@ -1,5 +1,4 @@
 ---
+# Static import so that tasks/restart.yml is the single definition of the handler.
 - name: Import restart-traefik handler
-  ansible.builtin.import_tasks: restart-traefik.yml
-- name: Import restart-ofelia handler
-  ansible.builtin.import_tasks: restart-ofelia.yml
+  ansible.builtin.import_tasks: ../tasks/restart.yml

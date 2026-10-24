@@ -1,0 +1,83 @@
+---
+argument_specs:
+  main:
+    short_description: Deploy Traefik as a Docker Compose service
+    options:
+      manage_traefik_version:
+        type: str
+        required: true
+        description: Tag of the Traefik image, for example C(v2.11).
+      manage_traefik_installation_path:
+        type: path
+        default: /var/traefik
+        description: Directory with the compose file and the Traefik configuration.
+      manage_traefik_network:
+        type: str
+        default: traefik
+        description: Name of the external Docker network that Traefik and the proxied services share.
+      manage_traefik_acme_email:
+        type: str
+        default: ""
+        description: Registration e-mail for ACME. The certificate resolver is only configured when this is set.
+      manage_traefik_acme_resolver:
+        type: str
+        default: myresolver
+        description: Name of the ACME certificate resolver.
+      manage_traefik_log_level:
+        type: str
+        default: ""
+        choices: ["", DEBUG, INFO, WARN, ERROR, FATAL, PANIC]
+        description: Log level. When empty, Traefik logs with its default level and no access log is written.
+      manage_traefik_dashboard_enabled:
+        type: bool
+        default: false
+        description: Enable the dashboard and publish it on 127.0.0.1:8080 only.
+      manage_traefik_extra_certs_folder:
+        type: path
+        default: ""
+        description: Host folder that is mounted as C(/etc/traefik/extra-certs). Not mounted when empty.
+      manage_traefik_manage_service:
+        type: bool
+        default: true
+        description: >-
+          Create the Docker network, start the service and restart it when its configuration changes.
+          Set to C(false) to only render the files.
+  set-log-level:
+    short_description: Render traefik.yml with another log level and restart Traefik
+    options:
+      manage_traefik_installation_path:
+        type: path
+        default: /var/traefik
+        description: Directory with the compose file and the Traefik configuration.
+      manage_traefik_network:
+        type: str
+        default: traefik
+        description: Name of the external Docker network that Traefik and the proxied services share.
+      manage_traefik_acme_email:
+        type: str
+        default: ""
+        description: Registration e-mail for ACME. Pass the value used for the deployment, it is part of traefik.yml.
+      manage_traefik_acme_resolver:
+        type: str
+        default: myresolver
+        description: Name of the ACME certificate resolver. Pass the value used for the deployment.
+      manage_traefik_log_level:
+        type: str
+        default: ""
+        choices: ["", DEBUG, INFO, WARN, ERROR, FATAL, PANIC]
+        description: Log level. Empty switches the access log off again.
+      manage_traefik_dashboard_enabled:
+        type: bool
+        default: false
+        description: Dashboard setting. Pass the value used for the deployment.
+      manage_traefik_manage_service:
+        type: bool
+        default: true
+        description: Restart the service. Set to C(false) to only render the file.
+  restart:
+    short_description: Recreate the Traefik container
+    options:
+      manage_traefik_installation_path:
+        type: path
+        default: /var/traefik
+        description: Directory with the compose file.

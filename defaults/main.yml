@@ -1,2 +1,9 @@
 ---
-TRAEFIK_INSTALLATION_PATH: "/var/traefik"
+manage_traefik_installation_path: /var/traefik
+manage_traefik_network: traefik
+manage_traefik_acme_email: ""
+manage_traefik_acme_resolver: myresolver
+manage_traefik_log_level: ""
+manage_traefik_dashboard_enabled: false
+manage_traefik_extra_certs_folder: ""
+manage_traefik_manage_service: true

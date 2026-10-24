@@ -1,3 +1,4 @@
+# {{ ansible_managed }}
 # Disable update checks and usage report
 global:
   checkNewVersion: false
@@ -19,30 +20,31 @@ providers:
     # Without explicitly setting the network here, traefik randomly
     # chooses one of the two IP addresses of the wiki services which
     # leads to random "gateway timout"s
-    network: traefik
+    network: {{ manage_traefik_network }}
   file:
     directory: '/etc/traefik/dynamic'
     watch: true
+{% if manage_traefik_dashboard_enabled | bool %}
 
-{% if TRAEFIK_DASHBOARD_PASSWORD is defined %}
+# Published on 127.0.0.1 only, see docker-compose.yml
 api:
   dashboard: true
   insecure: true
 {% endif %}
+{% if manage_traefik_acme_email | length > 0 %}
 
-{% if TRAEFIK_ACME_REGISTRATION_EMAIL is defined %}
 certificatesResolvers:
-  myresolver:
+  {{ manage_traefik_acme_resolver }}:
     acme:
-      email: {{ TRAEFIK_ACME_REGISTRATION_EMAIL }}
+      email: {{ manage_traefik_acme_email }}
       storage: /etc/traefik/acme.json
       httpChallenge:
         entryPoint: web
 {% endif %}
+{% if manage_traefik_log_level | length > 0 %}
 
-{% if TRAEFIK_LOG_LEVEL is defined %}
 log:
-  level: {{ TRAEFIK_LOG_LEVEL }}
+  level: {{ manage_traefik_log_level }}
 
 accessLog: {}
 {% endif %}

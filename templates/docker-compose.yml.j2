@@ -1,17 +1,20 @@
+# {{ ansible_managed }}
 services:
-
   traefik:
-    image: traefik:{{ TRAEFIK_VERSION }}
+    image: traefik:{{ manage_traefik_version }}
     container_name: traefik
     restart: unless-stopped
     ports:
       - '80:80'
       - '443:443'
+{% if manage_traefik_dashboard_enabled | bool %}
+      - '127.0.0.1:8080:8080'
+{% endif %}
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./etc:/etc/traefik
-{% if TRAEFIK_EXTRA_CERTS_FOLDER is defined %}
-      - "{{ TRAEFIK_EXTRA_CERTS_FOLDER }}:/etc/traefik/extra-certs"
+{% if manage_traefik_extra_certs_folder | length > 0 %}
+      - "{{ manage_traefik_extra_certs_folder }}:/etc/traefik/extra-certs"
 {% endif %}
     labels:
       - "traefik.http.middlewares.no-contenttype-autodetect.contenttype.autodetect=false"
@@ -20,19 +23,8 @@ services:
       HTTP_PROXY: ""
       https_proxy: ""
       HTTPS_PROXY: ""
-{% if OFELIA_VERSION is defined %}
-  ofelia:
-    image: mcuadros/ofelia:{{ OFELIA_VERSION }}
-    container_name: ofelia
-    restart: unless-stopped
-    command: daemon --docker
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./ofelia/config.ini:/config.ini
-      - ./ofelia/reports:/reports
-{% endif %}
 
 networks:
   default:
     external: true
-    name: traefik
+    name: {{ manage_traefik_network }}

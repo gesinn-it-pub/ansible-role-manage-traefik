@@ -1,0 +1,43 @@
+---
+- name: Ensure Traefik | Create the Docker network
+  community.docker.docker_network:
+    name: "{{ manage_traefik_network }}"
+    state: present
+  when: manage_traefik_manage_service | bool
+
+- name: Ensure Traefik | Ensure directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - "{{ manage_traefik_installation_path }}"
+    - "{{ manage_traefik_installation_path }}/etc"
+    - "{{ manage_traefik_installation_path }}/etc/certs"
+    - "{{ manage_traefik_installation_path }}/etc/dynamic"
+
+- name: Ensure Traefik | Ensure acme.json
+  # Traefik refuses an acme.json that is readable by others
+  ansible.builtin.copy:
+    dest: "{{ manage_traefik_installation_path }}/etc/acme.json"
+    content: ""
+    force: false
+    mode: "0600"
+  when: manage_traefik_acme_email | length > 0
+
+- name: Ensure Traefik | Ensure docker-compose.yml
+  ansible.builtin.template:
+    dest: "{{ manage_traefik_installation_path }}/docker-compose.yml"
+    src: docker-compose.yml.j2
+    mode: "0644"
+
+- name: Ensure Traefik | Ensure traefik.yml
+  ansible.builtin.import_tasks: render-traefik-yml.yml
+
+- name: Ensure Traefik | Ensure the service is running
+  # remove_orphans also removes the Ofelia container of the pre-2.0.0 compose file
+  community.docker.docker_compose_v2:
+    project_src: "{{ manage_traefik_installation_path }}"
+    state: present
+    remove_orphans: true
+  when: manage_traefik_manage_service | bool

@@ -1,0 +1,10 @@
+---
+# Entry point `tasks_from: restart` and, imported by handlers/main.yml, the
+# "Restart traefik" handler.
+- name: Restart traefik
+  community.docker.docker_compose_v2:
+    project_src: "{{ manage_traefik_installation_path }}"
+    services: [traefik]
+    state: present
+    recreate: always
+  when: manage_traefik_manage_service | bool

@@ -1,6 +1,6 @@
+---
 - name: Set Log Level | Render traefik.yml
-  ansible.builtin.template:
-    dest: "{{ TRAEFIK_INSTALLATION_PATH }}/etc/traefik.yml"
-    src: "traefik.yml.j2"
-    mode: '644'
-  notify: Restart traefik
+  ansible.builtin.import_tasks: render-traefik-yml.yml
+
+- name: Set Log Level | Apply the change
+  ansible.builtin.meta: flush_handlers

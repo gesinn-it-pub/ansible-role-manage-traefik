@@ -1,0 +1,7 @@
+---
+- name: Render Traefik | Render traefik.yml
+  ansible.builtin.template:
+    dest: "{{ manage_traefik_installation_path }}/etc/traefik.yml"
+    src: traefik.yml.j2
+    mode: "0644"
+  notify: Restart traefik
