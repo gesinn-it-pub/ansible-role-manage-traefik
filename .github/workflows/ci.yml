@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+    paths-ignore:
+      - '**/*.adoc'
+  pull_request:
+    paths-ignore:
+      - '**/*.adoc'
+  schedule:
+    - cron: '17 4 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Run lint
+        run: make lint
+
+  molecule:
+    name: molecule (${{ matrix.name }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # floor: the ansible-core line the consuming projects run
+          - name: ansible-core 2.18
+            ansible_core: '2.18'
+          # latest: the ansible-core bundled in the pinned tool image
+          - name: ansible-core latest
+            ansible_core: ''
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Run molecule
+        run: make molecule ANSIBLE_CORE=${{ matrix.ansible_core }}
