@@ -1,0 +1,45 @@
+---
+- name: Converge
+  hosts: all
+  tasks:
+    - name: Apply the role without manage_traefik_version
+      block:
+        - name: Apply role
+          ansible.builtin.include_role:
+            name: ansible-role-manage-traefik
+          vars:
+            manage_traefik_installation_path: /tmp/molecule-traefik-test
+            manage_traefik_manage_service: false
+        - name: Record that the role did not fail
+          ansible.builtin.copy:
+            dest: /tmp/molecule-traefik-result-version
+            content: "passed\n"
+            mode: "0644"
+      rescue:
+        - name: Record that the role failed
+          ansible.builtin.copy:
+            dest: /tmp/molecule-traefik-result-version
+            content: "failed\n"
+            mode: "0644"
+
+    - name: Apply the role with an unknown log level
+      block:
+        - name: Apply role
+          ansible.builtin.include_role:
+            name: ansible-role-manage-traefik
+          vars:
+            manage_traefik_version: v2.11
+            manage_traefik_log_level: LOUD
+            manage_traefik_installation_path: /tmp/molecule-traefik-test
+            manage_traefik_manage_service: false
+        - name: Record that the role did not fail
+          ansible.builtin.copy:
+            dest: /tmp/molecule-traefik-result-level
+            content: "passed\n"
+            mode: "0644"
+      rescue:
+        - name: Record that the role failed
+          ansible.builtin.copy:
+            dest: /tmp/molecule-traefik-result-level
+            content: "failed\n"
+            mode: "0644"

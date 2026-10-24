@@ -1,0 +1,28 @@
+---
+- name: Verify invalid-input
+  hosts: all
+  tasks:
+    - name: Read the results of the runs
+      ansible.builtin.slurp:
+        src: "{{ item }}"
+      loop:
+        - /tmp/molecule-traefik-result-version
+        - /tmp/molecule-traefik-result-level
+      register: results
+
+    - name: Assert a missing manage_traefik_version and an unknown log level fail the role
+      ansible.builtin.assert:
+        that: (item.content | b64decode | trim) == 'failed'
+        fail_msg: "{{ item.item }} must be 'failed'"
+      loop: "{{ results.results }}"
+      loop_control:
+        label: "{{ item.item }}"
+
+    - name: Check that nothing was deployed
+      ansible.builtin.stat:
+        path: /tmp/molecule-traefik-test
+      register: install_path
+
+    - name: Assert the failure happened before any file was written
+      ansible.builtin.assert:
+        that: not install_path.stat.exists

@@ -15,8 +15,6 @@ provisioner:
         hosts:
           instance:
             ansible_connection: local
-  options:
-    skip-tags: molecule_skip
 
 verifier:
   name: ansible

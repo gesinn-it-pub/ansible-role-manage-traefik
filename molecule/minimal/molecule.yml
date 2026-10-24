@@ -1,0 +1,20 @@
+---
+driver:
+  name: default
+
+platforms:
+  - name: instance
+
+provisioner:
+  name: ansible
+  env:
+    ANSIBLE_ROLES_PATH: /tmp/roles
+  inventory:
+    hosts:
+      all:
+        hosts:
+          instance:
+            ansible_connection: local
+
+verifier:
+  name: ansible

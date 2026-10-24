@@ -1,0 +1,16 @@
+---
+- name: Verify set-log-level
+  hosts: all
+  vars:
+    install_path: /tmp/molecule-traefik-test
+  tasks:
+    - name: Read traefik.yml
+      ansible.builtin.slurp:
+        src: "{{ install_path }}/etc/traefik.yml"
+      register: traefik_raw
+
+    - name: Assert the log level and the access log were switched on
+      ansible.builtin.assert:
+        that:
+          - (traefik_raw.content | b64decode | from_yaml).log.level == 'DEBUG'
+          - (traefik_raw.content | b64decode | from_yaml).accessLog is defined

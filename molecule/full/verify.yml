@@ -1,0 +1,62 @@
+---
+- name: Verify full
+  hosts: all
+  vars:
+    install_path: /tmp/molecule-traefik-test
+  tasks:
+    - name: Read docker-compose.yml
+      ansible.builtin.slurp:
+        src: "{{ install_path }}/docker-compose.yml"
+      register: compose_raw
+
+    - name: Read traefik.yml
+      ansible.builtin.slurp:
+        src: "{{ install_path }}/etc/traefik.yml"
+      register: traefik_raw
+
+    - name: Parse both files
+      ansible.builtin.set_fact:
+        compose: "{{ compose_raw.content | b64decode | from_yaml }}"
+        traefik: "{{ traefik_raw.content | b64decode | from_yaml }}"
+
+    - name: Stat acme.json
+      ansible.builtin.stat:
+        path: "{{ install_path }}/etc/acme.json"
+      register: acme
+
+    - name: Assert the image and the custom network
+      ansible.builtin.assert:
+        that:
+          - compose.services.traefik.image == 'traefik:v3.3'
+          - compose.networks.default.name == 'factory'
+          - traefik.providers.docker.network == 'factory'
+
+    - name: Assert the dashboard is published on localhost only
+      ansible.builtin.assert:
+        that:
+          - "'127.0.0.1:8080:8080' in compose.services.traefik.ports"
+          - "'8080:8080' not in compose.services.traefik.ports"
+          - traefik.api.dashboard
+
+    - name: Assert the extra certificates are mounted
+      ansible.builtin.assert:
+        that: "'/srv/extra-certs:/etc/traefik/extra-certs' in compose.services.traefik.volumes"
+
+    - name: Assert the ACME resolver
+      ansible.builtin.assert:
+        that:
+          - traefik.certificatesResolvers.letsencrypt.acme.email == 'admin@example.org'
+          - traefik.certificatesResolvers.letsencrypt.acme.storage == '/etc/traefik/acme.json'
+          - "'myresolver' not in traefik.certificatesResolvers"
+
+    - name: Assert acme.json exists and is private
+      ansible.builtin.assert:
+        that:
+          - acme.stat.exists
+          - acme.stat.mode == '0600'
+
+    - name: Assert the log level and the access log
+      ansible.builtin.assert:
+        that:
+          - traefik.log.level == 'INFO'
+          - traefik.accessLog is defined

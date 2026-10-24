@@ -1,0 +1,12 @@
+---
+# Deploy first, the scenario then changes the log level of that deployment.
+- name: Prepare
+  hosts: all
+  tasks:
+    - name: Apply role without a log level
+      ansible.builtin.include_role:
+        name: ansible-role-manage-traefik
+      vars:
+        manage_traefik_version: v2.11
+        manage_traefik_installation_path: /tmp/molecule-traefik-test
+        manage_traefik_manage_service: false

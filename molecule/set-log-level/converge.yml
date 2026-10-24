@@ -1,0 +1,15 @@
+---
+- name: Converge
+  hosts: all
+  tasks:
+    # Not covered: creating the Docker network, starting and restarting the
+    # service. They need a Docker daemon, so manage_traefik_manage_service is
+    # false and only the rendered files are tested.
+    - name: Set the log level
+      ansible.builtin.include_role:
+        name: ansible-role-manage-traefik
+        tasks_from: set-log-level
+      vars:
+        manage_traefik_installation_path: /tmp/molecule-traefik-test
+        manage_traefik_log_level: DEBUG
+        manage_traefik_manage_service: false

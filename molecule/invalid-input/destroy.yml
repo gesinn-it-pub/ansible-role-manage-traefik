@@ -1,0 +1,14 @@
+---
+# The local driver changes the machine that runs the test, so remove what the
+# scenario created.
+- name: Destroy
+  hosts: all
+  tasks:
+    - name: Remove files and directories created by the scenario
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - /tmp/molecule-traefik-test
+        - /tmp/molecule-traefik-result-version
+        - /tmp/molecule-traefik-result-level

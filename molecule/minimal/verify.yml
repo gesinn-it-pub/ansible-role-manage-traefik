@@ -1,0 +1,63 @@
+---
+- name: Verify minimal
+  hosts: all
+  vars:
+    install_path: /tmp/molecule-traefik-test
+  tasks:
+    - name: Read docker-compose.yml
+      ansible.builtin.slurp:
+        src: "{{ install_path }}/docker-compose.yml"
+      register: compose_raw
+
+    - name: Read traefik.yml
+      ansible.builtin.slurp:
+        src: "{{ install_path }}/etc/traefik.yml"
+      register: traefik_raw
+
+    - name: Parse both files
+      ansible.builtin.set_fact:
+        compose: "{{ compose_raw.content | b64decode | from_yaml }}"
+        traefik: "{{ traefik_raw.content | b64decode | from_yaml }}"
+
+    - name: Stat the files and directories
+      ansible.builtin.stat:
+        path: "{{ install_path }}/{{ item }}"
+      loop: [etc/certs, etc/dynamic, etc/acme.json]
+      register: paths
+
+    - name: Assert the image, container name and network
+      ansible.builtin.assert:
+        that:
+          - compose.services.traefik.image == 'traefik:v2.11'
+          - compose.services.traefik.container_name == 'traefik'
+          - compose.networks.default.name == 'traefik'
+          - compose.networks.default.external
+          - traefik.providers.docker.network == 'traefik'
+
+    - name: Assert the Docker socket is mounted read-only
+      ansible.builtin.assert:
+        that: "'/var/run/docker.sock:/var/run/docker.sock:ro' in compose.services.traefik.volumes"
+
+    - name: Assert only the web ports are published
+      ansible.builtin.assert:
+        that: compose.services.traefik.ports == ['80:80', '443:443']
+
+    - name: Assert Ofelia is no longer part of the compose file
+      ansible.builtin.assert:
+        that: compose.services | list == ['traefik']
+
+    - name: Assert the optional features are off
+      ansible.builtin.assert:
+        that:
+          - traefik.api is not defined
+          - traefik.certificatesResolvers is not defined
+          - traefik.log is not defined
+          - traefik.accessLog is not defined
+          - not paths.results[2].stat.exists
+          - compose.services.traefik.volumes | length == 2
+
+    - name: Assert the directories exist
+      ansible.builtin.assert:
+        that:
+          - paths.results[0].stat.isdir
+          - paths.results[1].stat.isdir
