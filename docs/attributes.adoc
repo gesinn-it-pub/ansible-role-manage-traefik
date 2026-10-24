@@ -1,3 +1,0 @@
-:project_name: Ansible Role "Manage Traefik"
-:project_type: ansible
-:with_docker:

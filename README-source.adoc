@@ -1,4 +1,152 @@
-include::docs/attributes.adoc[]
+:project_name: Ansible Role "Manage Traefik"
 = {project_name}
 
 Special purpose Ansible role to manage traefik proxy in "factory" environments.
+
+== What it does
+
+`tasks/main.yml` deploys Traefik as a Docker Compose service:
+
+. Creates the Docker network that Traefik shares with the proxied services (default `traefik`).
+. Creates the installation directory with `etc/certs` and `etc/dynamic`, and `etc/acme.json` (mode 0600) when ACME is
+  configured.
+. Renders `docker-compose.yml` and `etc/traefik.yml`.
+. Starts the service with `community.docker.docker_compose_v2`. `remove_orphans` removes services that are no longer
+  part of the compose file, for example the Ofelia container of 1.x.
+
+Traefik gets the Docker socket read-only, redirects HTTP to HTTPS and reads dynamic configuration from `etc/dynamic`.
+Ofelia is a role of its own: https://github.com/gesinn-it-pub/ansible-role-manage-ofelia[ansible-role-manage-ofelia].
+
+== Requirements
+
+* ansible-core 2.19 or newer (the CI tests the 2.19 floor and the latest release)
+* The collection listed in `requirements.yml` (`community.docker` 3.6 or newer) and the Docker Compose plugin on the
+  target
+* Privileges to write the installation path and to talk to the Docker daemon (usually `become: true`)
+
+== Usage
+
+[source,yaml]
+----
+- hosts: all
+  become: true
+  tasks:
+    - name: Ensure Traefik
+      ansible.builtin.include_role:
+        name: gesinn.manage_traefik
+      vars:
+        manage_traefik_version: v2.11
+----
+
+Further entry points, called with `tasks_from`:
+
+[cols="1,3",options="header"]
+|===
+| Entry point | Purpose
+
+| `set-log-level`
+| Renders `traefik.yml` with `manage_traefik_log_level` and restarts Traefik when the file changed. Pass the same
+  values for the other variables that you use for the deployment, they are part of `traefik.yml`. An empty log level
+  switches the debug log off again.
+
+| `restart`
+| Recreates the Traefik container.
+|===
+
+The task file names are part of the interface of the role.
+
+== Variables
+
+The variables are validated against `meta/argument_specs.yml`.
+
+[cols="2,1,3",options="header"]
+|===
+| Variable | Default | Description
+
+| `manage_traefik_version`
+| required
+| Tag of the Traefik image, for example `v2.11`.
+
+| `manage_traefik_installation_path`
+| `/var/traefik`
+| Directory with the compose file and the configuration.
+
+| `manage_traefik_network`
+| `traefik`
+| External Docker network that Traefik and the proxied services share. Traefik uses it for the Docker provider.
+
+| `manage_traefik_acme_email`
+| empty
+| ACME registration e-mail. The certificate resolver is only configured when this is set.
+
+| `manage_traefik_acme_resolver`
+| `myresolver`
+| Name of the ACME certificate resolver, as referenced by the router labels.
+
+| `manage_traefik_log_level`
+| empty
+| `DEBUG`, `INFO`, `WARN`, `ERROR`, `FATAL` or `PANIC`. When set, the access log is written as well.
+
+| `manage_traefik_dashboard_enabled`
+| `false`
+| Enable the dashboard. It is published on `127.0.0.1:8080` only and has no authentication.
+
+| `manage_traefik_extra_certs_folder`
+| empty
+| Host folder that is mounted as `/etc/traefik/extra-certs`.
+
+| `manage_traefik_manage_service`
+| `true`
+| Create the network, start and restart the service. Set to `false` to only render the files.
+|===
+
+== Handlers
+
+`Restart traefik` recreates the container after a changed `traefik.yml`. Changes of `docker-compose.yml` are applied by
+the task that starts the service. Consumers can notify the handler or define a handler with the same name in their play.
+
+== Upgrading from 1.x
+
+* ansible-core 2.19 or newer is required (1.x supported 2.18).
+* All variables were renamed:
++
+[cols="1,1",options="header"]
+|===
+| 1.x | 2.0
+
+| `TRAEFIK_VERSION`
+| `manage_traefik_version`
+
+| `TRAEFIK_INSTALLATION_PATH`
+| `manage_traefik_installation_path`
+
+| `TRAEFIK_ACME_REGISTRATION_EMAIL`
+| `manage_traefik_acme_email`
+
+| `TRAEFIK_LOG_LEVEL`
+| `manage_traefik_log_level`
+
+| `TRAEFIK_EXTRA_CERTS_FOLDER`
+| `manage_traefik_extra_certs_folder`
+|===
++
+`manage_traefik_version` is required now; the role fails early when it is missing.
+* Ofelia was removed (`OFELIA_VERSION`, `handlers/restart-ofelia.yml`). Use `gesinn.manage_ofelia` and run it after
+  this role: the first run of 2.0 removes the old Ofelia container from the Traefik compose project.
+* `TRAEFIK_DASHBOARD_PASSWORD` was removed. It never set a password but enabled the unauthenticated dashboard on
+  port 8080. Use `manage_traefik_dashboard_enabled` instead; the dashboard is only published on `127.0.0.1` now.
+* The task file `ensure-traefik.yml` is now `tasks/main.yml`, and the handler files are replaced by the entry point
+  `tasks_from: restart`. `set-log-level` is called the same way as before.
+* The `docker_compose` variable is no longer used. The role uses `community.docker.docker_compose_v2`.
+* Traefik mounts the Docker socket read-only. The first run recreates the container for that reason.
+
+== Development
+
+[source,shell]
+----
+make lint       # ansible-lint, production profile
+make molecule   # all scenarios; ANSIBLE_CORE=2.19 runs the floor, SCENARIO=<name> runs one
+----
+
+The Molecule scenarios run with `manage_traefik_manage_service: false`: creating the network and starting or
+restarting the service need a Docker daemon and are not covered by the tests.
