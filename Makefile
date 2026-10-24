@@ -40,7 +40,7 @@ docker-run-rw := docker run --rm \
 	-w /workspace \
 	$(core-image)
 
-.PHONY: lint molecule ci seed-collections
+.PHONY: lint molecule ci
 
 lint:
 	@$(cache-dir)
@@ -55,8 +55,3 @@ molecule:
 		 && ANSIBLE_ROLES_PATH=/tmp/roles molecule test $(mol-args)"
 
 ci: lint molecule
-
-# Workaround while Galaxy is down: fill the collections cache from GitHub (see scripts/seed-collections.sh)
-seed-collections:
-	@$(cache-dir)
-	$(docker-run-rw) sh /workspace/scripts/seed-collections.sh
