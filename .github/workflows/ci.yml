@@ -42,8 +42,8 @@ jobs:
       matrix:
         include:
           # floor: the ansible-core line the consuming projects run
-          - name: ansible-core 2.18
-            ansible_core: '2.18'
+          - name: ansible-core 2.19
+            ansible_core: '2.19'
           # latest: the ansible-core bundled in the pinned tool image
           - name: ansible-core latest
             ansible_core: ''

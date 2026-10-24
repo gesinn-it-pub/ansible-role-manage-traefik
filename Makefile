@@ -7,7 +7,7 @@ ANSIBLE_DEV_TOOLS_IMAGE       ?= ghcr.io/ansible/community-ansible-dev-tools:26.
 ANSIBLE_DEV_TOOLS_IMAGE_PY313 ?= ghcr.io/ansible/community-ansible-dev-tools:26.4.0
 
 # Empty: use the ansible-core bundled in the image. Set to a release line
-# (e.g. 2.18) to install that line into the container first — this is how a
+# (e.g. 2.19) to install that line into the container first — this is how a
 # CI matrix leg is reproduced locally.
 ANSIBLE_CORE ?=
 # Empty: run every scenario.
