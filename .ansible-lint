@@ -1,13 +1,9 @@
 ---
-profile: basic
+profile: production
 
 # Exclude files not meant to be linted directly
 exclude_paths:
   - .github/
-
-# community.docker is an external collection; suppress "couldn't resolve module" warnings
-warn_list:
-  - fqcn[action]
 
 # Skip rules that don't apply to this role
 skip_list:
